@@ -61,10 +61,10 @@ if uploaded_file:
         # Allow user to modify picklist mappings
         edited_picklist_df = st.data_editor(picklist_df, key="picklist_mapping")
         
-        # Replace values in original dataset based on mapping
-        mapping_dict = {row["Original Value"]: row["Mapped Value"] for _, row in edited_picklist_df.iterrows() if row["Mapped Value"]}
+        # Replace values in original dataset based on mapping, ensuring column specificity
         for column in picklist_values.keys():
-            df[column] = df[column].replace(mapping_dict)
+            column_mapping = {row["Original Value"]: row["Mapped Value"] for _, row in edited_picklist_df.iterrows() if row["Column Name"] == column and row["Mapped Value"]}
+            df[column] = df[column].replace(column_mapping)
         
         # Allow downloading updated dataset
         updated_csv = df.to_csv(index=False).encode('utf-8')
