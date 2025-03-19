@@ -28,9 +28,9 @@ if uploaded_file:
             # Detect field type
             if pd.api.types.is_numeric_dtype(df[column]):
                 field_type = "Number"
-            elif pd.api.types.is_datetime64_any_dtype(df[column]):
+            elif pd.to_datetime(df[column], errors='coerce').notna().all():  # Check if all values can be converted to datetime
                 field_type = "Date"
-            elif df[column].nunique() / total_rows < 0.05 and not pd.api.types.is_datetime64_any_dtype(df[column]):
+            elif df[column].nunique() / total_rows < 0.05:
                 field_type = "Picklist"
                 picklist_dict[column] = df[column].value_counts().to_dict()
             else:
