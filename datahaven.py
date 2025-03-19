@@ -59,7 +59,7 @@ if uploaded_file:
                                    columns=["Column Name", "Original Value", "Mapped Value"])
         
         # Allow user to modify picklist mappings
-        edited_picklist_df = st.experimental_data_editor(picklist_df, key="picklist_mapping")
+        edited_picklist_df = st.data_editor(picklist_df, key="picklist_mapping")
         
         # Replace values in original dataset based on mapping
         mapping_dict = {row["Original Value"]: row["Mapped Value"] for _, row in edited_picklist_df.iterrows() if row["Mapped Value"]}
