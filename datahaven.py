@@ -54,12 +54,21 @@ if uploaded_file:
     
     # Create picklist values table
     if picklist_values:
-        st.write("### Picklist Values")
-        picklist_df = pd.DataFrame([(col, key, val) for col, values in picklist_values.items() for key, val in values.items()], 
-                                   columns=["Column Name", "Picklist Value", "Count"])
-        st.write(picklist_df)
-        picklist_csv = picklist_df.to_csv(index=False).encode('utf-8')
-        st.download_button("Download Picklist Values", picklist_csv, "datahaven_picklist_values.csv", "text/csv")
+        st.write("### Picklist Values Mapping")
+        picklist_df = pd.DataFrame([(col, key, "") for col, values in picklist_values.items() for key in values.keys()],
+                                   columns=["Column Name", "Original Value", "Mapped Value"])
+        
+        # Allow user to modify picklist mappings
+        edited_picklist_df = st.experimental_data_editor(picklist_df, key="picklist_mapping")
+        
+        # Replace values in original dataset based on mapping
+        mapping_dict = {row["Original Value"]: row["Mapped Value"] for _, row in edited_picklist_df.iterrows() if row["Mapped Value"]}
+        for column in picklist_values.keys():
+            df[column] = df[column].replace(mapping_dict)
+        
+        # Allow downloading updated dataset
+        updated_csv = df.to_csv(index=False).encode('utf-8')
+        st.download_button("Download Updated Dataset", updated_csv, "datahaven_updated.csv", "text/csv")
     
     # Provide download option for analysis results
     st.download_button("Download Analysis Results", csv, "datahaven_analysis.csv", "text/csv")
